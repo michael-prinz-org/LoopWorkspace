@@ -1,6 +1,6 @@
 [submodule "Loop"]
 	path = Loop
-	url = github.com:michael-prinz-org/Loop.git
+	url = git@github.com:michael-prinz-org/Loop.git
 [submodule "LoopKit"]
 	path = LoopKit
 	url = https://github.com/LoopKit/LoopKit.git
@@ -54,7 +54,7 @@
 	url = https://github.com/LoopKit/LibreTransmitter.git
 [submodule "OmnipodKit"]
 	path = OmnipodKit
-	url = github.com:michael-prinz-org/OmnipodKit
+	url = git@github.com:michael-prinz-org/OmnipodKit
 [submodule "MedtrumKit"]
 	path = MedtrumKit
 	url = https://github.com/jbr7rr/MedtrumKit
