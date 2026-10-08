@@ -3,7 +3,7 @@
 	url = git@github.com:michael-prinz-org/Loop.git
 [submodule "LoopKit"]
 	path = LoopKit
-	url = https://github.com/LoopKit/LoopKit.git
+	url = git@github.com:michael-prinz-org/LoopKit.git
 [submodule "CGMBLEKit"]
 	path = CGMBLEKit
 	url = https://github.com/LoopKit/CGMBLEKit.git
