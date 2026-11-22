@@ -1,0 +1,59 @@
+name: 5. Test Loop
+run-name: Test Loop (${{ github.ref_name }})
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: LoopTests and LoopKitTests
+    runs-on: xcode-27
+    permissions:
+      contents: read
+    steps:
+      - name: Select Xcode version
+        run: "sudo xcode-select --switch /Applications/Xcode_27.1.app/Contents/Developer"
+
+      - name: Checkout Repo for testing
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GH_PAT }}
+          submodules: recursive
+
+      - name: Apply LoopWorkspace patches
+        run: |
+          if $(ls ./patches/* &> /dev/null); then
+          git apply ./patches/* --allow-empty -v --whitespace=fix
+          fi
+
+      - name: Pick iPhone simulator
+        id: simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j \
+            | ruby -rjson -e 'd = JSON.parse(STDIN.read)["devices"].select { |k, _| k.include?("iOS") }.values.flatten.find { |x| x["name"].start_with?("iPhone") }; puts d ? d["udid"] : ""')
+          if [ -z "$UDID" ]; then
+            echo "::error::No available iPhone simulator found."
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Run tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace LoopWorkspace.xcworkspace \
+            -scheme LoopWorkspace \
+            -destination "id=${{ steps.simulator.outputs.udid }}" \
+            -only-testing:LoopTests \
+            -only-testing:LoopKitTests \
+            -resultBundlePath TestResults.xcresult \
+            | tee testlog.txt
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results
+          path: |
+            TestResults.xcresult
+            testlog.txt
